@@ -1,0 +1,11 @@
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${self:custom.region.${self:custom.stage}}
+  profile: ${self:custom.profile.${self:custom.stage}}
+  memorySize: 512
+  timeout: 6
+  logRetentionInDays: 7
+  environment:
+    stage: ${self:custom.stage}
+    TZ: ${self:custom.timezone}

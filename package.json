@@ -1,0 +1,21 @@
+{
+  "name": "eyedee-api",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --ext .ts --cache --ignore-path .gitignore"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.22.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-strongloop": "^2.1.0",
+    "serverless-bundle": "^4.4.0",
+    "serverless-offline": "^7.0.0"
+  }
+}

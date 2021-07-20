@@ -1,0 +1,15 @@
+custom:
+  timezone: Asia/Jakarta
+  stage: ${opt:stage, self:provider.stage}
+  profile:
+    prod: gilbert-production
+    dev: gilbert-production
+  region:
+    prod: ap-southeast-1
+    dev: ap-southeast-1
+  bundle:
+    sourcemaps: true                # Enable source maps
+    caching: true                   # Enable Webpack caching
+    stats: false                    # Don't print out any Webpack output
+    linting: true
+    disableForkTsChecker: false

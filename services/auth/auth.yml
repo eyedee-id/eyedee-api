@@ -1,0 +1,7 @@
+functions:
+  AuthApiLogin:
+    handler: ./services/auth/functions/login.handler
+    name: ${self:service}-${self:custom.stage}-auth-api-login
+  AuthApiRegister:
+    handler: ./services/auth/functions/register.handler
+    name: ${self:service}-${self:custom.stage}-auth-api-register

@@ -1,0 +1,13 @@
+service: eyedee
+
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle
+  - serverless-offline
+
+custom: ${file(./serverless/custom.yml):custom}
+provider: ${file(./serverless/provider.yml):provider}
+
+functions: ${file(./serverless/functions.yml):functions}

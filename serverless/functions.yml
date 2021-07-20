@@ -1,0 +1,2 @@
+functions:
+  ${file(./services/auth/auth.yml):functions}
