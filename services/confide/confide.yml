@@ -1,0 +1,17 @@
+functions:
+  ConfideApiCreateV1:
+    handler: ./services/confide/functions/confide-new.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-create-v1
+    events:
+      - httpApi:
+          method: PUT
+          path: /v1/confide
+          authorizer: authorizerCognito
+  ConfideApiExploreV1:
+    handler: ./services/confide/functions/confide-explore.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-explore-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/confide/explore
+          authorizer: authorizerCognito
