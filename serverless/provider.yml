@@ -6,6 +6,30 @@ provider:
   memorySize: 512
   timeout: 6
   logRetentionInDays: 7
-  environment:
-    stage: ${self:custom.stage}
-    TZ: ${self:custom.timezone}
+  httpApi:
+    stageName: ${self:custom.stage}
+    name: ${self:service}-${self:custom.stage}
+    payload: '2.0'
+    cors: true
+    authorizers:
+      authorizerCognito:
+        identitySource: $request.header.Authorization
+        issuerUrl:
+          Fn::Join:
+            - ''
+            - - 'https://cognito-idp.'
+              - '${opt:region, self:provider.region}'
+              - '.amazonaws.com/'
+              - ${self:custom.cognito.userPoolId.${self:custom.stage}}
+        audience: ${self:custom.cognito.userPoolClientIds.${self:custom.stage}}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        Fn::GetAtt: [ TableMain, Arn ]

@@ -1,5 +1,7 @@
 service: eyedee
 
+useDotenv: true
+
 package:
   individually: true
 
@@ -9,5 +11,5 @@ plugins:
 
 custom: ${file(./serverless/custom.yml):custom}
 provider: ${file(./serverless/provider.yml):provider}
-
 functions: ${file(./serverless/functions.yml):functions}
+resources:  ${file(./serverless/resources.yml):resources}

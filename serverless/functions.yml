@@ -1,2 +1,3 @@
 functions:
-  ${file(./services/auth/auth.yml):functions}
+  - ${file(./services/auth/auth.yml):functions}
+  - ${file(./services/confide/confide.yml):functions}
