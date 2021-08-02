@@ -7,21 +7,16 @@ provider:
   timeout: 6
   logRetentionInDays: 7
   httpApi:
-    stageName: ${self:custom.stage}
+    # stageName: ${self:custom.stage}
     name: ${self:service}-${self:custom.stage}
     payload: '2.0'
     cors: true
     authorizers:
       authorizerCognito:
         identitySource: $request.header.Authorization
-        issuerUrl:
-          Fn::Join:
-            - ''
-            - - 'https://cognito-idp.'
-              - '${opt:region, self:provider.region}'
-              - '.amazonaws.com/'
-              - ${self:custom.cognito.userPoolId.${self:custom.stage}}
-        audience: ${self:custom.cognito.userPoolClientIds.${self:custom.stage}}
+        issuerUrl: !Sub https://cognito-idp.${opt:region, self:provider.region}.amazonaws.com/${CognitoUserPool}
+        audience:
+          Ref: CognitoUserPoolClient
   iamRoleStatements:
     - Effect: Allow
       Action:

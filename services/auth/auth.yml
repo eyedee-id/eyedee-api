@@ -1,4 +1,12 @@
 functions:
+  AuthPreSignUp:
+    handler: ./services/auth/functions/pre-sign-up.handler
+    name: ${self:service}-${self:custom.stage}-auth-pre-sign-up
+    events:
+      - cognitoUserPool:
+          pool: ${self:service}-${self:custom.stage}-user-pool
+          trigger: PreSignUp
+          existing: true
 #  AuthSyncUserDynamodb:
 #    handler: ./services/auth/functions/sync-user-dynamodb.handler
 #    name: ${self:service}-${self:custom.stage}-auth-sync-user-dynamodb

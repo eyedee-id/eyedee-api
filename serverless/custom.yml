@@ -13,15 +13,4 @@ custom:
     stats: false                    # Don't print out any Webpack output
     linting: true
     disableForkTsChecker: false
-  cognito:
-    userPoolId:
-      dev: 'ap-southeast-1_ewx0UbzTi'
-      prod: ''
-    userPoolArn:
-      dev: arn:aws:cognito-idp:ap-southeast-1:418808748878:userpool/ap-southeast-1_ewx0UbzTi
-      prod: ''
-    userPoolClientIds:
-      dev:
-        - '2e06ps03qfaulasgklstt8mt9k'
-      prod:
-        - ''
+
