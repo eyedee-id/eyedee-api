@@ -1,20 +1,20 @@
 functions:
   AuthPreSignUp:
-    handler: ./services/auth/functions/pre-sign-up.handler
+    handler: ./services/auth/functions/cognito-pre-sign-up.handler
     name: ${self:service}-${self:custom.stage}-auth-pre-sign-up
     events:
       - cognitoUserPool:
           pool: ${self:service}-${self:custom.stage}-user-pool
           trigger: PreSignUp
           existing: true
-#  AuthSyncUserDynamodb:
-#    handler: ./services/auth/functions/sync-user-dynamodb.handler
-#    name: ${self:service}-${self:custom.stage}-auth-sync-user-dynamodb
-#    events:
-#      - cognitoUserPool:
-#          pool: ap-southeast-1_ewx0UbzTi
-#          trigger: PostConfirmation
-#          existing: true
+  AuthPostConfirmation:
+    handler: ./services/auth/functions/cognito-post-confirmation.handler
+    name: ${self:service}-${self:custom.stage}-auth-confirmation
+    events:
+      - cognitoUserPool:
+          pool: ${self:service}-${self:custom.stage}-user-pool
+          trigger: PostConfirmation
+          existing: true
   AuthApiMeV1:
     handler: ./services/auth/functions/me.handler
     name: ${self:service}-${self:custom.stage}-auth-api-me-v1
@@ -22,4 +22,12 @@ functions:
       - httpApi:
           method: GET
           path: /v1/auth/me
+          authorizer: authorizerCognito
+  AuthApiUserGetV1:
+    handler: ./services/auth/functions/user-get.handler
+    name: ${self:service}-${self:custom.stage}-auth-api-user-get-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/user/{username}
           authorizer: authorizerCognito
