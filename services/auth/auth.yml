@@ -23,11 +23,3 @@ functions:
           method: GET
           path: /v1/auth/me
           authorizer: authorizerCognito
-  AuthApiUserGetV1:
-    handler: ./services/auth/functions/user-get.handler
-    name: ${self:service}-${self:custom.stage}-auth-api-user-get-v1
-    events:
-      - httpApi:
-          method: GET
-          path: /v1/user/{username}
-          authorizer: authorizerCognito

@@ -7,6 +7,14 @@ functions:
           method: PUT
           path: /v1/confide
           authorizer: authorizerCognito
+  ConfideApiDetailV1:
+    handler: ./services/confide/functions/confide-detail.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-detail-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/confide/{confide_id}
+          authorizer: authorizerCognito
   ConfideApiExploreV1:
     handler: ./services/confide/functions/confide-explore.handler
     name: ${self:service}-${self:custom.stage}-confide-api-explore-v1

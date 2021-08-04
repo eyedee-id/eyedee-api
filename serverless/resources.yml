@@ -30,7 +30,7 @@ resources:
       Type: AWS::Cognito::IdentityPool
       Properties:
         # Generate a name based on the stage
-        IdentityPoolName: ${self:service}-${self:custom.stage}-identity-pool
+        IdentityPoolName: ${self:service}_${self:custom.stage}_identity_pool # gaboleh -, harus underscore
         # Don't allow unathenticated users
         AllowUnauthenticatedIdentities: false
         # Link to our User Pool

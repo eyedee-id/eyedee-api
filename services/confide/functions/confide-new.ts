@@ -3,9 +3,9 @@ import {ApiModel} from '../../../shared/models/api.model';
 import {getAuth} from '../../../shared/libs/auth';
 import {nanoid} from 'nanoid';
 import {
-  ConfideModel,
+  ConfideModel, dynamodbEncodeKeyConfideDetail,
   dynamodbEncodeKeyExploreConfide,
-  dynamodbEncodeKeyUserConfide
+  dynamodbEncodeKeyUserPrivateConfide, dynamodbEncodeKeyUserPublicConfide
 } from '../../../shared/models/confide.model';
 import {validateParameterBoolean, validateParameterString} from '../../../shared/libs/validation';
 import code from '../../../shared/libs/code';
@@ -53,16 +53,38 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
     };
 
     const items = [
+      /**
+       * buat view user secara private (user itu sendiri)
+       */
       dynamodbConvertPutRequestItem({
-        ...dynamodbEncodeKeyUserConfide(confide),
+        ...dynamodbEncodeKeyUserPrivateConfide(confide),
         username: auth.username,
         total_comment: 0,
         is_anonim: params.is_anonim,
         text: params.text,
       }),
 
+
+      /**
+       * buat view explore
+       */
       dynamodbConvertPutRequestItem({
         ...dynamodbEncodeKeyExploreConfide(confide),
+        ...((params.is_anonim) ? {} : {
+          user_id: auth.sub,
+          username: auth.username,
+        }),
+        total_comment: 0,
+        is_anonim: params.is_anonim,
+        text: params.text,
+      }),
+
+      /**
+       * buat detail confide
+       */
+      dynamodbConvertPutRequestItem({
+        ...dynamodbEncodeKeyConfideDetail(confide),
+        at_created: now,
         user_id: auth.sub,
         username: auth.username,
         total_comment: 0,
@@ -71,7 +93,21 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       }),
 
       //@todo: pattern lainnya
-    ]
+    ];
+
+    if (params.is_anonim !== true) {
+      items.push(
+        /**
+         * buat view user -secara public
+         */
+        dynamodbConvertPutRequestItem({
+          ...dynamodbEncodeKeyUserPublicConfide(confide),
+          username: auth.username,
+          total_comment: 0,
+          text: params.text,
+        }),
+      )
+    }
 
     await dynamodbBatchWrite(items);
 

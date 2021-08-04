@@ -1,0 +1,9 @@
+functions:
+  AuthApiUserGetV1:
+    handler: ./services/user/functions/user-detail.handler
+    name: ${self:service}-${self:custom.stage}-user-api-detail-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/user/{username}
+          authorizer: authorizerCognito
