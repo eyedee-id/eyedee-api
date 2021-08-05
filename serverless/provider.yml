@@ -29,4 +29,13 @@ provider:
         - dynamodb:BatchWriteItem
         - dynamodb:BatchGetItem
       Resource:
-        Fn::GetAtt: [ TableMain, Arn ]
+        - Fn::GetAtt: [ TableUser, Arn ]
+        - Fn::Join:
+            - "/"
+            - - { Fn::GetAtt: [ TableUser, Arn ] }
+              - "index/*"
+        - Fn::GetAtt: [ TableMain, Arn ]
+        - Fn::Join:
+            - "/"
+            - - { Fn::GetAtt: [ TableMain, Arn ] }
+              - "index/*"

@@ -1,4 +1,5 @@
 import {
+  BatchGetItemCommand,
   BatchWriteItemCommand,
   DynamoDBClient,
   GetItemCommand,
@@ -14,7 +15,7 @@ const dynamodb = new DynamoDBClient({
 
 const dynamodbTableName = 'eyedee-' + config.stage;
 
-interface WriteRequest<T> {
+export interface WriteRequest<T> {
   PutRequest?: { Item: T };
   DeleteRequest?: { Key: T };
 }
@@ -133,6 +134,18 @@ export async function dynamodbBatchWrite(
   object[dynamodbTableName] = items;
   return await dynamodb
     .send(new BatchWriteItemCommand({
+      RequestItems: object,
+    }));
+}
+
+export async function dynamodbBatchGet(
+  items: Array<WriteRequest<any>>,
+) {
+
+  const object = {};
+  object[dynamodbTableName] = items;
+  return await dynamodb
+    .send(new BatchGetItemCommand({
       RequestItems: object,
     }));
 }

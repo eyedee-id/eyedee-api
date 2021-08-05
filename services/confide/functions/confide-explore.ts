@@ -5,6 +5,7 @@ import {
 } from '../../../shared/models/confide.model';
 import {dynamodbQuery} from '../../../shared/libs/dynamodb';
 import {unmarshall} from '@aws-sdk/util-dynamodb';
+import {userListByUserIds} from "../../../shared/functions/user";
 
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<Array<ConfideModel>>> {
@@ -29,7 +30,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
     });
 
     const userIds = {};
-    const confides = dynamodbResult.Items
+    let confides = dynamodbResult.Items
       .map(i => {
         const unmarshalled = unmarshall(i);
         const decodedKey = dynamodbDecodeKeyExploreConfide({
@@ -49,6 +50,27 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
           sk: undefined,
         }
       });
+
+    const users = await userListByUserIds(Object.keys(userIds))
+    const usersObj = Object.assign({},
+      ...users.map(item => ({[item.user_id]: item}),
+      ));
+
+    confides = confides
+      .map(i => {
+
+        if (!i.is_anonim) {
+          const user = usersObj[i.user_id];
+
+          return {
+            ...i,
+            username: user.username,
+            name_: user.name_,
+          }
+        }
+
+        return i;
+      })
 
     return {
       status: true,

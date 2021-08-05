@@ -2,7 +2,7 @@ export interface ConfideModel {
   user_id?: string;
   confide_id?: string;
   username?: string;
-  name?: string;
+  name_?: string;
   is_anonim?: boolean;
 
   text?: string;

@@ -8,6 +8,7 @@ import {dynamodbGet} from '../../../shared/libs/dynamodb';
 import {unmarshall} from '@aws-sdk/util-dynamodb';
 import {getAuth} from "../../../shared/libs/auth";
 import code from "../../../shared/libs/code";
+import {userGetByUserId} from "../../../shared/functions/user";
 
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<ConfideModel>> {
@@ -39,6 +40,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
 
     if (auth.user_id !== confide.user_id && confide.is_anonim) {
       delete confide.user_id;
+    }
+
+    if (confide.user_id) {
+      const user = await userGetByUserId(confide.user_id);
+      confide.username = user.username;
+      confide.name_ = user.name_;
     }
 
     return {

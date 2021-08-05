@@ -9,7 +9,7 @@ functions:
           existing: true
   AuthPostConfirmation:
     handler: ./services/auth/functions/cognito-post-confirmation.handler
-    name: ${self:service}-${self:custom.stage}-auth-confirmation
+    name: ${self:service}-${self:custom.stage}-auth-post-confirmation
     events:
       - cognitoUserPool:
           pool: ${self:service}-${self:custom.stage}-user-pool

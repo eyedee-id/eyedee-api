@@ -2,9 +2,8 @@ import {APIGatewayProxyEventV2} from 'aws-lambda';
 import {ApiModel} from '../../../shared/models/api.model';
 import {getAuth} from '../../../shared/libs/auth';
 import code from "../../../shared/libs/code";
-import {dynamodbUpdate} from "../../../shared/libs/dynamodb";
-import {dynamodbEncodeKeyUser} from "../../../shared/models/user.model";
 import {validateParameterString} from "../../../shared/libs/validation";
+import {userUpdate} from "../../../shared/functions/user";
 
 function validateParams(data: any) {
   try {
@@ -35,14 +34,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
 
     const auth = getAuth(event);
 
-    const key = dynamodbEncodeKeyUser({
-      user_id: auth.user_id,
-      username: auth.username,
-    });
 
-    const updateResult = await dynamodbUpdate(
-      key.pk,
-      key.sk,
+    const updateResult = await userUpdate(
+      auth.user_id,
       'SET name_ = :newName',
       {
         ':newName': params.name_,
