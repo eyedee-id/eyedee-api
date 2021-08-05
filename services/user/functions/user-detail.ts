@@ -44,7 +44,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
         };
         
         // hide sensitive data dari user lainnya
-        if (decodedKey.user_id !== auth.sub) {
+        if (decodedKey.user_id !== auth.user_id) {
             user.email = undefined;
             user.at_created = undefined;
         }

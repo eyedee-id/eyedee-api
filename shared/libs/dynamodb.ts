@@ -3,7 +3,7 @@ import {
   DynamoDBClient,
   GetItemCommand,
   PutItemCommand,
-  QueryCommand
+  QueryCommand, UpdateItemCommand
 } from '@aws-sdk/client-dynamodb';
 import config from './config';
 import {marshall} from '@aws-sdk/util-dynamodb';
@@ -107,6 +107,22 @@ export async function dynamodbPut(pk: string, sk: string, item: any,) {
 
   return await dynamodb
     .send(new PutItemCommand(params));
+}
+
+export async function dynamodbUpdate(pk: string, sk: string, updateExpression: string, updateValues: { [key: string]: any }) {
+
+  const params = {
+    TableName: dynamodbTableName,
+    Key: marshall({
+      pk: pk,
+      sk: sk,
+    }),
+    UpdateExpression: updateExpression,
+    ExpressionAttributeValues: marshall(updateValues),
+  };
+
+  return await dynamodb
+    .send(new UpdateItemCommand(params));
 }
 
 export async function dynamodbBatchWrite(

@@ -95,13 +95,27 @@ resources:
         AttributeDefinitions:
           - AttributeName: pk
             AttributeType: S
-          - AttributeName: sk
+          - AttributeName: sk # gsi-1-pk
+            AttributeType: S
+          - AttributeName: gsi-1-sk
             AttributeType: S
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
           - AttributeName: sk
             KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: gsi-1
+            KeySchema:
+              - AttributeName: sk # gsi-1-pk
+                KeyType: HASH
+              - AttributeName: gsi-1-sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

@@ -22,7 +22,7 @@ function validateParams(data: any) {
     if (
       text === false
       || text.length < 5
-      || text.length > 1000
+      || text.length > 3000
       || isAnonim === null
       || isAnonim === undefined
     ) {
@@ -47,7 +47,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
 
     const now = +new Date();
     const confide = {
-      user_id: auth.sub,
+      user_id: auth.user_id,
       confide_id: nanoid(32),
       at_created: now,
     };
@@ -58,7 +58,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
        */
       dynamodbConvertPutRequestItem({
         ...dynamodbEncodeKeyUserPrivateConfide(confide),
-        username: auth.username,
         total_comment: 0,
         is_anonim: params.is_anonim,
         text: params.text,
@@ -71,8 +70,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       dynamodbConvertPutRequestItem({
         ...dynamodbEncodeKeyExploreConfide(confide),
         ...((params.is_anonim) ? {} : {
-          user_id: auth.sub,
-          username: auth.username,
+          user_id: auth.user_id,
         }),
         total_comment: 0,
         is_anonim: params.is_anonim,
@@ -85,8 +83,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       dynamodbConvertPutRequestItem({
         ...dynamodbEncodeKeyConfideDetail(confide),
         at_created: now,
-        user_id: auth.sub,
-        username: auth.username,
+        user_id: auth.user_id,
         total_comment: 0,
         is_anonim: params.is_anonim,
         text: params.text,
@@ -102,7 +99,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
          */
         dynamodbConvertPutRequestItem({
           ...dynamodbEncodeKeyUserPublicConfide(confide),
-          username: auth.username,
           total_comment: 0,
           text: params.text,
         }),

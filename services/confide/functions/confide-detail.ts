@@ -37,9 +37,8 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       ...unmarshalled
     }
 
-    if (auth.sub !== confide.user_id && confide.is_anonim) {
+    if (auth.user_id !== confide.user_id && confide.is_anonim) {
       delete confide.user_id;
-      delete confide.username;
     }
 
     return {

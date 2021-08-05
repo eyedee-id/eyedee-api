@@ -5,7 +5,7 @@ import config from './config';
 export function getAuth(event: APIGatewayProxyEventV2): AuthModel {
   if (config.is_local) {
     return {
-      sub: 'local-sub',
+      user_id: 'local-sub',
       username: 'local-username',
       email: 'local@eyedee.id',
     }
@@ -21,7 +21,7 @@ export function getAuth(event: APIGatewayProxyEventV2): AuthModel {
   }
 
   return {
-    sub: claims.sub as string,
+    user_id: claims.sub as string,
     username: claims['cognito:username'] as string,
     email: claims.email as string,
   }

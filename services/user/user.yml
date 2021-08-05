@@ -1,9 +1,25 @@
 functions:
-  AuthApiUserGetV1:
+  AuthApiUserDetailV1:
     handler: ./services/user/functions/user-detail.handler
     name: ${self:service}-${self:custom.stage}-user-api-detail-v1
     events:
       - httpApi:
           method: GET
           path: /v1/user/{username}
+          authorizer: authorizerCognito
+  AuthApiUserUpdateNameV1:
+    handler: ./services/user/functions/user-update-name.handler
+    name: ${self:service}-${self:custom.stage}-user-api-update-name-v1
+    events:
+      - httpApi:
+          method: POST
+          path: /v1/user/name
+          authorizer: authorizerCognito
+  AuthApiUserUpdateBioV1:
+    handler: ./services/user/functions/user-update-bio.handler
+    name: ${self:service}-${self:custom.stage}-user-api-update-bio-v1
+    events:
+      - httpApi:
+          method: POST
+          path: /v1/user/bio
           authorizer: authorizerCognito

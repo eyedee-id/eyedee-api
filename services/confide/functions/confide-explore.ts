@@ -28,6 +28,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
       last_key: lastKey,
     });
 
+    const userIds = {};
     const confides = dynamodbResult.Items
       .map(i => {
         const unmarshalled = unmarshall(i);
@@ -37,7 +38,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
         })
         if (unmarshalled.is_anonim) {
           delete unmarshalled.user_id;
-          delete unmarshalled.username;
+        } else {
+
+          userIds[unmarshalled.user_id] = null;
         }
         return {
           ...unmarshalled,

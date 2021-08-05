@@ -16,7 +16,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
     const params = event.queryStringParameters;
 
     const auth = getAuth(event);
-    const userIsGetOwnData = (auth.sub === params.user_id);
+    const userIsGetOwnData = (auth.user_id === params.user_id);
 
     if (params && params.at_created && params.confide_id) {
       if (userIsGetOwnData) {
@@ -62,6 +62,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
             pk: unmarshalled.pk,
             sk: unmarshalled.sk,
           })
+
+          if (unmarshalled.is_anonim) {
+            delete unmarshalled.user_id;
+          }
         } else {
           decodedKey = dynamodbDecodeKeyUserPublicConfide({
             pk: unmarshalled.pk,
@@ -70,7 +74,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
 
           if (unmarshalled.is_anonim) {
             delete unmarshalled.user_id;
-            delete unmarshalled.username;
           }
         }
 
