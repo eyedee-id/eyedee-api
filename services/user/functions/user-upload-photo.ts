@@ -13,7 +13,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
     const auth = getAuth(event);
     const data = JSON.parse(event.body) as UserPhoto;
 
-    if (!['banner', 'profiles'].includes(data.photo_type)) {
+    if (!['banner', 'profile'].includes(data.photo_type)) {
       throw Error(code.input_invalid);
     }
 
