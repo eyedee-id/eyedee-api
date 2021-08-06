@@ -51,26 +51,28 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
         }
       });
 
-    const users = await userListByUserIds(Object.keys(userIds))
-    const usersObj = Object.assign({},
-      ...users.map(item => ({[item.user_id]: item}),
-      ));
+    if (Object.keys(userIds).length > 0) {
+      const users = await userListByUserIds(Object.keys(userIds))
+      const usersObj = Object.assign({},
+        ...users.map(item => ({[item.user_id]: item}),
+        ));
 
-    confides = confides
-      .map(i => {
+      confides = confides
+        .map(i => {
 
-        if (!i.is_anonim) {
-          const user = usersObj[i.user_id];
+          if (!i.is_anonim) {
+            const user = usersObj[i.user_id];
 
-          return {
-            ...i,
-            username: user.username,
-            name_: user.name_,
+            return {
+              ...i,
+              username: user.username,
+              name_: user.name_,
+            }
           }
-        }
 
-        return i;
-      })
+          return i;
+        })
+    }
 
     return {
       status: true,
