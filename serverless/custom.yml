@@ -13,4 +13,10 @@ custom:
     stats: false                    # Don't print out any Webpack output
     linting: true
     disableForkTsChecker: false
+  s3Bucket:
+    Ref: S3Bucket
+  dynamodbTableUser:
+    Ref: TableUser
+  dynamodbTableMain:
+    Ref: TableMain
 

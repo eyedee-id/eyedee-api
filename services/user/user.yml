@@ -23,3 +23,11 @@ functions:
           method: POST
           path: /v1/user/bio
           authorizer: authorizerCognito
+  AuthApiUserUploadPhotoProfile:
+    handler: ./services/user/functions/user-upload-photo-profile.handler
+    name: ${self:service}-${self:custom.stage}-user-api-upload-photo-profile-v1
+    events:
+      - httpApi:
+          method: POST
+          path: /v1/user/photo/profile
+          authorizer: authorizerCognito

@@ -1,0 +1,32 @@
+iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+      - dynamodb:BatchWriteItem
+      - dynamodb:BatchGetItem
+    Resource:
+      - Fn::GetAtt: [ TableUser, Arn ]
+      - Fn::Join:
+          - "/"
+          - - { Fn::GetAtt: [ TableUser, Arn ] }
+            - "index/*"
+      - Fn::GetAtt: [ TableMain, Arn ]
+      - Fn::Join:
+          - "/"
+          - - { Fn::GetAtt: [ TableMain, Arn ] }
+            - "index/*"
+  - Effect: Allow
+    Action:
+      - s3:GetObject
+      - s3:PutObject
+      - s3:PutObjectAcl
+    Resource:
+      - Fn::Join:
+          - "/"
+          - - { Fn::GetAtt: [ S3Bucket, Arn ] }
+            - "*"

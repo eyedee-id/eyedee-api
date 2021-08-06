@@ -1,30 +1,29 @@
 import {APIGatewayProxyEventV2} from 'aws-lambda';
 import {ApiModel} from '../../../shared/models/api.model';
 import {getAuth} from '../../../shared/libs/auth';
+import {FileObj, s3CreatePreSignedPost} from "../../../shared/libs/s3";
 import code from "../../../shared/libs/code";
-import {userGetByUsername} from "../../../shared/functions/user";
-import config from "../../../shared/libs/config";
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<any>> {
   try {
+    const auth = getAuth(event);
+    const data = JSON.parse(event.body) as FileObj;
 
-    if (!event.pathParameters.username) {
+    const fileExtension = data.extension;
+    if (!['jpg', 'jpeg', 'png'].includes(fileExtension)) {
       throw Error(code.input_invalid);
     }
+    const fileName = `${auth.user_id}.${fileExtension}`;
 
-    const auth = getAuth(event);
-    const username = event.pathParameters.username;
-
-    const user = await userGetByUsername(username);
-
-    // hide sensitive data dari user lainnya
-    if (user.user_id !== auth.user_id) {
-      user.email = undefined;
-    }
+    const s3 = await s3CreatePreSignedPost(
+      `users/images/profile`,
+      fileName,
+      data.type,
+    )
 
     return {
       status: true,
-      data: user,
+      data: s3,
     };
 
   } catch (e) {

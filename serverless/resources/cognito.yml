@@ -1,0 +1,88 @@
+CognitoUserPool:
+  Type: AWS::Cognito::UserPool
+  Properties:
+    UserPoolName: ${self:service}-${self:custom.stage}-user-pool
+    UsernameConfiguration:
+      CaseSensitive: false
+    AliasAttributes:
+      - preferred_username
+      - email
+      - phone_number
+    AutoVerifiedAttributes:
+      - email
+    Policies:
+      PasswordPolicy:
+        MinimumLength: 8
+        RequireLowercase: false
+        RequireNumbers: false
+        RequireSymbols: false
+        RequireUppercase: false
+CognitoUserPoolClient:
+  Type: AWS::Cognito::UserPoolClient
+  Properties:
+    ClientName: ${self:service}-${self:custom.stage}-user-pool-client
+    UserPoolId:
+      Ref: CognitoUserPool
+    GenerateSecret: false
+CognitoIdentityPool:
+  Type: AWS::Cognito::IdentityPool
+  Properties:
+    # Generate a name based on the stage
+    IdentityPoolName: ${self:service}_${self:custom.stage}_identity_pool # gaboleh -, harus underscore
+    # Don't allow unathenticated users
+    AllowUnauthenticatedIdentities: false
+    # Link to our User Pool
+    CognitoIdentityProviders:
+      - ClientId:
+          Ref: CognitoUserPoolClient
+        ProviderName:
+          Fn::GetAtt: [ "CognitoUserPool", "ProviderName" ]
+CognitoIdentityPoolRoles:
+  Type: AWS::Cognito::IdentityPoolRoleAttachment
+  Properties:
+    IdentityPoolId:
+      Ref: CognitoIdentityPool
+    Roles:
+      authenticated:
+        Fn::GetAtt: [ CognitoAuthRole, Arn ]
+CognitoAuthRole:
+  Type: AWS::IAM::Role
+  Properties:
+    Path: /
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: 'Allow'
+          Principal:
+            Federated: 'cognito-identity.amazonaws.com'
+          Action:
+            - 'sts:AssumeRoleWithWebIdentity'
+          Condition:
+            StringEquals:
+              'cognito-identity.amazonaws.com:aud':
+                Ref: CognitoIdentityPool
+            'ForAnyValue:StringLike':
+              'cognito-identity.amazonaws.com:amr': authenticated
+    Policies:
+      - PolicyName: 'CognitoAuthorizedPolicy'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: 'Allow'
+              Action:
+                - 'mobileanalytics:PutEvents'
+                - 'cognito-sync:*'
+                - 'cognito-identity:*'
+              Resource: '*'
+            # Allow users to upload attachments to their
+            # folder inside our S3 bucket
+#                - Effect: 'Allow'
+#                  Action:
+#                    - 's3:*'
+#                  Resource:
+#                    - Fn::Join:
+#                        - ''
+#                        - - 'Fn::ImportValue': ${self:custom.stage}-ExtAttachmentsBucketArn
+#                          - '/private/'
+#                          - '$'
+#                          - '{cognito-identity.amazonaws.com:sub}/*'

@@ -17,25 +17,10 @@ provider:
         issuerUrl: !Sub https://cognito-idp.${opt:region, self:provider.region}.amazonaws.com/${CognitoUserPool}
         audience:
           Ref: CognitoUserPoolClient
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-        - dynamodb:BatchWriteItem
-        - dynamodb:BatchGetItem
-      Resource:
-        - Fn::GetAtt: [ TableUser, Arn ]
-        - Fn::Join:
-            - "/"
-            - - { Fn::GetAtt: [ TableUser, Arn ] }
-              - "index/*"
-        - Fn::GetAtt: [ TableMain, Arn ]
-        - Fn::Join:
-            - "/"
-            - - { Fn::GetAtt: [ TableMain, Arn ] }
-              - "index/*"
+  iamRoleStatements: ${file(./serverless/iam.yml):iamRoleStatements}
+  environment:
+    stage: ${self:custom.stage}
+    region: ${self:custom.region.${self:custom.stage}}
+    dynamodb_table_user: ${self.custom.dynamodbTableUser}
+    dynamodb_table_main: ${self.custom.dynamodbTableMain}
+    s3_bucket: ${self:custom.s3Bucket}

@@ -4,6 +4,9 @@ export interface UserModel {
   email?: string;
   name_?: string;
 
+  avatar_url?: string;
+  banner_url?: string;
+
   at_created?: number;
   at_updated?: number;
   at_deleted?: number;

@@ -1,0 +1,17 @@
+S3Bucket:
+  Type: AWS::S3::Bucket
+  Properties:
+    BucketName: ${self:service}-${self:custom.stage}-bucket
+    BucketEncryption:
+      ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+    VersioningConfiguration:
+      Status: Enabled
+    CorsConfiguration:
+      CorsRules:
+        - AllowedHeaders: [ 'Authorization' ]
+          AllowedMethods: [ GET, PUT, POST ]
+          AllowedOrigins: [ '*' ]
+          Id: CORSRuleId1
+          MaxAge: '3600'
