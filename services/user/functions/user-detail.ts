@@ -17,6 +17,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
 
     const user = await userGetByUsername(username);
 
+    user.avatar_url = `https://${config.s3_bucket}.s3.${config.region}.amazonaws.com/users/images/profile/${user.user_id}.png`; // always pake .png
+    user.banner_url = `https://${config.s3_bucket}.s3.${config.region}.amazonaws.com/users/images/banner/${user.user_id}.png`; // always pake .png
+
     // hide sensitive data dari user lainnya
     if (user.user_id !== auth.user_id) {
       user.email = undefined;
