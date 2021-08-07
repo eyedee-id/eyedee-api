@@ -3,7 +3,7 @@ import {ApiModel} from '../../../shared/models/api.model';
 import {getAuth} from '../../../shared/libs/auth';
 import code from "../../../shared/libs/code";
 import {userGetByUsername} from "../../../shared/functions/user";
-import config from "../../../shared/libs/config";
+import {userPhoto} from "../../../shared/models/user.model";
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<any>> {
   try {
@@ -17,9 +17,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
 
     const user = await userGetByUsername(username);
 
-    user.avatar_url = `https://${config.s3_bucket}.s3.${config.region}.amazonaws.com/users/images/profile/${user.user_id}.png`; // always pake .png
-    user.banner_url = `https://${config.s3_bucket}.s3.${config.region}.amazonaws.com/users/images/banner/${user.user_id}.png`; // always pake .png
-
     // hide sensitive data dari user lainnya
     if (user.user_id !== auth.user_id) {
       user.email = undefined;
@@ -27,7 +24,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
 
     return {
       status: true,
-      data: user,
+      data: {
+        ...user,
+        ...userPhoto(user),
+      },
     };
 
   } catch (e) {

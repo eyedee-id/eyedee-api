@@ -3,6 +3,7 @@ import {ApiModel} from '../../../shared/models/api.model';
 import {getAuth} from '../../../shared/libs/auth';
 import {FileObj, s3CreatePreSignedPost} from "../../../shared/libs/s3";
 import code from "../../../shared/libs/code";
+import {userUpdate} from "../../../shared/functions/user";
 
 interface UserPhoto extends FileObj {
   photo_type: 'banner' | 'profile';
@@ -31,6 +32,16 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
       `users/images/${data.photo_type}`,
       fileName,
       data.type,
+    )
+
+    const now = +new Date();
+    // update user at_updated
+    await userUpdate(
+      auth.user_id,
+      'SET at_updated = :now',
+      {
+        ':now': now,
+      }
     )
 
     return {

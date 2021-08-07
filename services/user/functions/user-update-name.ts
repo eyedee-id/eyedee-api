@@ -34,12 +34,14 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<a
 
     const auth = getAuth(event);
 
+    const now = +new Date();
 
     const updateResult = await userUpdate(
       auth.user_id,
-      'SET name_ = :newName',
+      'SET name_ = :newName, at_updated = :now',
       {
         ':newName': params.name_,
+        ':now': now,
       }
     )
 
