@@ -13,12 +13,12 @@ resources:
       Value:
         Ref: CognitoUserPool
       Export:
-        Name: ${self:service}-${self:provider.stage}-UserPoolId
+        Name: ${self:service}-${self:custom.stage}-UserPoolId
     UserPoolClientId:
       Value:
         Ref: CognitoUserPoolClient
       Export:
-        Name: ${self:service}-${self:provider.stage}-UserPoolClientId
+        Name: ${self:service}-${self:custom.stage}-UserPoolClientId
     IdentityPoolId:
       Value:
         Ref: CognitoIdentityPool
@@ -27,3 +27,8 @@ resources:
         Ref: CognitoAuthRole
       Export:
         Name: ${self:service}-${self:custom.stage}-CognitoAuthRole
+    HttpApiId:
+      Value:
+        Ref: HttpApi
+      Export:
+        Name: ${self:service}-${self:custom.stage}-HttpApiId

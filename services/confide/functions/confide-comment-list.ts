@@ -1,26 +1,34 @@
 import {APIGatewayProxyEventV2} from 'aws-lambda';
 import {ApiModel} from '../../../shared/models/api.model';
-import {
-  ConfideModel, dynamodbDecodeKeyExploreConfide, dynamodbEncodeKeyExploreConfide,
-} from '../../../shared/models/confide.model';
 import {dynamodbQuery} from '../../../shared/libs/dynamodb';
 import {unmarshall} from '@aws-sdk/util-dynamodb';
 import {userListByUserIds} from "../../../shared/functions/user";
 import {userPhoto} from "../../../shared/models/user.model";
+import {
+  ConfideCommentModel,
+  dynamodbDecodeKeyConfideComment,
+  dynamodbEncodeKeyConfideComment
+} from "../../../shared/models/confide-comment.model";
 
 
-export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<Array<ConfideModel>>> {
+export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<Array<ConfideCommentModel>>> {
   try {
+
+    const confideId = event.pathParameters.confide_id;
+
     let lastKey = undefined;
     const params = event.queryStringParameters;
-    if (params && params.at_created && params.confide_id) {
-      lastKey = dynamodbEncodeKeyExploreConfide({
+    if (params && params.at_created && params.comment_id) {
+      lastKey = dynamodbEncodeKeyConfideComment({
+        confide_id: confideId,
         at_created: +params.at_created,
-        confide_id: params.confide_id,
+        comment_id: params.comment_id,
       });
     }
 
-    const key = dynamodbEncodeKeyExploreConfide({});
+    const key = dynamodbEncodeKeyConfideComment({
+      confide_id: confideId,
+    });
     const dynamodbResult = await dynamodbQuery({
       pk: key.pk,
       sk: key.sk,
@@ -31,10 +39,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
     });
 
     const userIds = {};
-    let confides = dynamodbResult.Items
+    let comments = dynamodbResult.Items
       .map(i => {
         const unmarshalled = unmarshall(i);
-        const decodedKey = dynamodbDecodeKeyExploreConfide({
+        const decodedKey = dynamodbDecodeKeyConfideComment({
           pk: unmarshalled.pk,
           sk: unmarshalled.sk,
         })
@@ -58,7 +66,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
         ...users.map(item => ({[item.user_id]: item}),
         ));
 
-      confides = confides
+      comments = comments
         .map(i => {
 
           if (!i.is_anonim) {
@@ -77,7 +85,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
 
     return {
       status: true,
-      data: confides,
+      data: comments,
       meta: dynamodbResult.LastEvaluatedKey,
     };
 

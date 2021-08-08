@@ -31,3 +31,19 @@ functions:
           method: GET
           path: /v1/confide/user
           authorizer: authorizerCognito
+  ConfideApiCommentListV1:
+    handler: ./services/confide/functions/confide-comment-list.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-comment-list-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/confide/{confide_id}/comment
+          authorizer: authorizerCognito
+  ConfideApiCommentNewV1:
+    handler: ./services/confide/functions/confide-comment-new.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-comment-new-v1
+    events:
+      - httpApi:
+          method: PUT
+          path: /v1/confide/{confide_id}/comment
+          authorizer: authorizerCognito
