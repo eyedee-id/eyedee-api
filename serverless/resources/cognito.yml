@@ -17,6 +17,15 @@ CognitoUserPool:
         RequireNumbers: false
         RequireSymbols: false
         RequireUppercase: false
+    Schema:
+      - Name: "public_key"
+        AttributeDataType: String
+        Required: false
+        Mutable: true
+      - Name: "secret_key"
+        AttributeDataType: String
+        Required: false
+        Mutable: true
 CognitoUserPoolClient:
   Type: AWS::Cognito::UserPoolClient
   Properties:

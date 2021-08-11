@@ -24,6 +24,10 @@ export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent, 
       userAttributes.name = event.request.userAttributes.name;
     }
 
+    if (event.request.userAttributes['custom:public_key']) {
+      userAttributes.public_key = event.request.userAttributes['custom:public_key'];
+    }
+
     await userPut(event.request.userAttributes.sub, {
       user_id: event.request.userAttributes.sub,
       username: event.userName,
