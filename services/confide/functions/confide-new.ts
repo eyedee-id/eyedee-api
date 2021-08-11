@@ -4,7 +4,7 @@ import {getAuth} from '../../../shared/libs/auth';
 import {nanoid} from 'nanoid';
 import {
   ConfideModel, dynamodbEncodeKeyConfideDetail,
-  dynamodbEncodeKeyExploreConfide,
+  dynamodbEncodeKeyExploreConfide, dynamodbEncodeKeyHashtagConfide,
   dynamodbEncodeKeyUserPrivateConfide, dynamodbEncodeKeyUserPublicConfide
 } from '../../../shared/models/confide.model';
 import {validateParameterBoolean, validateParameterString} from '../../../shared/libs/validation';
@@ -52,6 +52,28 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       at_created: now,
     };
 
+    let dynamodbHashtagItems = [];
+    let hashtags: null | Array<string> = params.text.match(/#[\p{L}]+/ugi);
+    if (hashtags) {
+      hashtags = [
+        ...new Set(
+          hashtags.map(i => i.replace('#', '').toLowerCase())
+        )
+      ];
+
+      dynamodbHashtagItems = hashtags.map(hashtag => {
+        return dynamodbConvertPutRequestItem({
+          ...dynamodbEncodeKeyHashtagConfide(hashtag, confide),
+          ...((params.is_anonim) ? {} : {
+            user_id: auth.user_id,
+          }),
+          total_comment: 0,
+          is_anonim: params.is_anonim,
+          text: params.text,
+        })
+      })
+    }
+
     const items = [
       /**
        * buat view user secara private (user itu sendiri)
@@ -87,7 +109,10 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         total_comment: 0,
         is_anonim: params.is_anonim,
         text: params.text,
+        hashtags: hashtags,
       }),
+
+      ...dynamodbHashtagItems,
 
       //@todo: pattern lainnya
     ];

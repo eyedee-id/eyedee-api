@@ -23,6 +23,14 @@ functions:
           method: GET
           path: /v1/confide/explore
           authorizer: authorizerCognito
+  ConfideApiHashtagV1:
+    handler: ./services/confide/functions/confide-hashtag.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-hashtag-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/confide/hashtag/{hashtag}
+          authorizer: authorizerCognito
   ConfideApiUserV1:
     handler: ./services/confide/functions/confide-user.handler
     name: ${self:service}-${self:custom.stage}-confide-api-user-v1

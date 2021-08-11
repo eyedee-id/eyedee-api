@@ -90,6 +90,11 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       at_created: now,
     };
 
+    let hashtags: null | Array<string> = params.text.match(/#[\p{L}]+/ugi);
+    if (hashtags) {
+      hashtags = hashtags.map(i => i.replace('#', ''));
+    }
+
     const items = [
       /**
        * buat public comment
@@ -101,6 +106,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         }),
         is_anonim: params.is_anonim,
         text: params.text,
+        hashtags: hashtags,
       }),
 
     ];
