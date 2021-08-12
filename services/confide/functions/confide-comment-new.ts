@@ -4,7 +4,7 @@ import {
   ConfideModel,
   dynamodbDecodeKeyConfideDetail,
   dynamodbEncodeKeyConfideDetail,
-  dynamodbEncodeKeyExploreConfide,
+  dynamodbEncodeKeyExploreConfide, dynamodbEncodeKeyHashtagConfide,
   dynamodbEncodeKeyUserPrivateConfide,
   dynamodbEncodeKeyUserPublicConfide,
 } from '../../../shared/models/confide.model';
@@ -90,10 +90,28 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       at_created: now,
     };
 
-    let hashtags: null | Array<string> = params.text.match(/#[\p{L}]+/ugi);
-    if (hashtags) {
-      hashtags = hashtags.map(i => i.replace('#', ''));
-    }
+    // disable hashtag dalam di confide-comment
+    // let dynamodbHashtagItems = [];
+    // let hashtags: null | Array<string> = params.text.match(/#[\p{L}]+/ugi);
+    // if (hashtags) {
+    //   hashtags = [
+    //     ...new Set(
+    //       hashtags.map(i => i.replace('#', '').toLowerCase())
+    //     )
+    //   ];
+    //
+    //   dynamodbHashtagItems = hashtags.map(hashtag => {
+    //     return dynamodbConvertPutRequestItem({
+    //       ...dynamodbEncodeKeyHashtagConfide(hashtag, confide),
+    //       ...((params.is_anonim) ? {} : {
+    //         user_id: auth.user_id,
+    //       }),
+    //       total_comment: 0,
+    //       is_anonim: params.is_anonim,
+    //       text: params.text,
+    //     })
+    //   })
+    // }
 
     const items = [
       /**
@@ -106,7 +124,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         }),
         is_anonim: params.is_anonim,
         text: params.text,
-        hashtags: hashtags,
+        // hashtags: hashtags,
       }),
 
     ];
@@ -138,6 +156,21 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         ':total_comment_default': 0,
       }
     )
+
+    if (confide.hashtags && confide.hashtags.length > 0) {
+      for (const hashtag of confide.hashtags) {
+        const confideHashtagKey = dynamodbEncodeKeyHashtagConfide(hashtag, confide);
+        await dynamodbUpdate(
+          confideHashtagKey.pk,
+          confideHashtagKey.sk,
+          'SET total_comment = if_not_exists(total_comment, :total_comment_default) + :increment',
+          {
+            ':increment': 1,
+            ':total_comment_default': 0,
+          }
+        )
+      }
+    }
 
     if (confide.user_id) {
       const confideUserPublicKey = dynamodbEncodeKeyUserPublicConfide(confide);

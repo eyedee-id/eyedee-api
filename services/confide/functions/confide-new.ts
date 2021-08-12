@@ -75,6 +75,20 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
     }
 
     const items = [
+
+      /**
+       * buat detail confide
+       */
+      dynamodbConvertPutRequestItem({
+        ...dynamodbEncodeKeyConfideDetail(confide),
+        at_created: now,
+        user_id: auth.user_id,
+        total_comment: 0,
+        is_anonim: params.is_anonim,
+        text: params.text,
+        hashtags: hashtags,
+      }),
+
       /**
        * buat view user secara private (user itu sendiri)
        */
@@ -84,7 +98,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         is_anonim: params.is_anonim,
         text: params.text,
       }),
-
 
       /**
        * buat view explore
@@ -99,18 +112,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         text: params.text,
       }),
 
-      /**
-       * buat detail confide
-       */
-      dynamodbConvertPutRequestItem({
-        ...dynamodbEncodeKeyConfideDetail(confide),
-        at_created: now,
-        user_id: auth.user_id,
-        total_comment: 0,
-        is_anonim: params.is_anonim,
-        text: params.text,
-        hashtags: hashtags,
-      }),
 
       ...dynamodbHashtagItems,
 
