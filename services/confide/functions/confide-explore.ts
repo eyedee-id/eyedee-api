@@ -3,7 +3,7 @@ import {ApiModel} from '../../../shared/models/api.model';
 import {
   ConfideModel, dynamodbDecodeKeyExploreConfide, dynamodbEncodeKeyExploreConfide,
 } from '../../../shared/models/confide.model';
-import {dynamodbQuery} from '../../../shared/libs/dynamodb';
+import {dynamodbQuery, dynamodbQueryLimit} from '../../../shared/libs/dynamodb';
 import {unmarshall} from '@aws-sdk/util-dynamodb';
 import {userListByUserIds} from "../../../shared/functions/user";
 import {userPhoto} from "../../../shared/models/user.model";
@@ -26,7 +26,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
       sk: key.sk,
       sk_condition: 'begins_with',
       sort: 'desc',
-      limit: 10,
+      limit: dynamodbQueryLimit,
       last_key: lastKey,
     });
 
@@ -78,7 +78,9 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
     return {
       status: true,
       data: confides,
-      meta: dynamodbResult.LastEvaluatedKey,
+      meta: {
+        limit: dynamodbQueryLimit,
+      },
     };
 
   } catch (e) {

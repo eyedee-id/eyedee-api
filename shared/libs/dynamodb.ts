@@ -15,6 +15,8 @@ const dynamodb = new DynamoDBClient({
 
 const dynamodbTableName = 'eyedee-' + config.stage;
 
+export const dynamodbQueryLimit = 10;
+
 export interface WriteRequest<T> {
   PutRequest?: { Item: T };
   DeleteRequest?: { Key: T };
