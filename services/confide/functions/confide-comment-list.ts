@@ -33,7 +33,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
       pk: key.pk,
       sk: key.sk,
       sk_condition: 'begins_with',
-      sort: 'desc',
+      sort: 'asc',
       limit: dynamodbQueryLimit,
       last_key: lastKey,
     });

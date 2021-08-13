@@ -46,14 +46,32 @@ CognitoIdentityPool:
           Ref: CognitoUserPoolClient
         ProviderName:
           Fn::GetAtt: [ "CognitoUserPool", "ProviderName" ]
-CognitoIdentityPoolRoles:
-  Type: AWS::Cognito::IdentityPoolRoleAttachment
+CognitoUnauthRole:
+  Type: 'AWS::IAM::Role'
   Properties:
-    IdentityPoolId:
-      Ref: CognitoIdentityPool
-    Roles:
-      authenticated:
-        Fn::GetAtt: [ CognitoAuthRole, Arn ]
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: 'Allow'
+          Principal:
+            Federated: 'cognito-identity.amazonaws.com'
+          Action:
+            - 'sts:AssumeRoleWithWebIdentity'
+          Condition:
+            StringEquals:
+              'cognito-identity.amazonaws.com:aud':
+                Ref: CognitoIdentityPool
+            'ForAnyValue:StringLike':
+              'cognito-identity.amazonaws.com:amr': unauthenticated
+    Policies:
+      - PolicyName: 'CognitoAuthorizedPolicy'
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: 'Allow'
+              Action:
+                - 'mobileanalytics:PutEvents'
+              Resource: '*'
 CognitoAuthRole:
   Type: AWS::IAM::Role
   Properties:
@@ -79,19 +97,23 @@ CognitoAuthRole:
           Statement:
             - Effect: 'Allow'
               Action:
+                - 'iot:DescribeEndpoint'
+                - 'iot:Receive'
+                - 'iot:Subscribe'
+                - 'iot:GetTopicRule'
+                - 'iot:Connect'
+                - 'iot:DescribeCertificate'
                 - 'mobileanalytics:PutEvents'
                 - 'cognito-sync:*'
                 - 'cognito-identity:*'
               Resource: '*'
-            # Allow users to upload attachments to their
-            # folder inside our S3 bucket
-#                - Effect: 'Allow'
-#                  Action:
-#                    - 's3:*'
-#                  Resource:
-#                    - Fn::Join:
-#                        - ''
-#                        - - 'Fn::ImportValue': ${self:custom.stage}-ExtAttachmentsBucketArn
-#                          - '/private/'
-#                          - '$'
-#                          - '{cognito-identity.amazonaws.com:sub}/*'
+CognitoIdentityPoolRoles:
+  Type: AWS::Cognito::IdentityPoolRoleAttachment
+  Properties:
+    IdentityPoolId:
+      Ref: CognitoIdentityPool
+    Roles:
+      unauthenticated:
+        Fn::GetAtt: [ CognitoUnauthRole, Arn ]
+      authenticated:
+        Fn::GetAtt: [ CognitoAuthRole, Arn ]

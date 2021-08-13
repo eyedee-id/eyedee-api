@@ -11,6 +11,11 @@ import {validateParameterBoolean, validateParameterString} from '../../../shared
 import code from '../../../shared/libs/code';
 import {dynamodbBatchWrite, dynamodbConvertPutRequestItem} from '../../../shared/libs/dynamodb';
 
+import { IoTDataPlaneClient, PublishCommand } from "@aws-sdk/client-iot-data-plane";
+import config from "../../../shared/libs/config";
+import {fromUtf8} from "@aws-sdk/util-utf8-node";
+import {userGetByUserId} from "../../../shared/functions/user";
+import {userPhoto} from "../../../shared/models/user.model";
 
 function validateParams(data: any) {
   try {
@@ -132,6 +137,31 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
     }
 
     await dynamodbBatchWrite(items);
+
+    const user = await userGetByUserId(auth.user_id);
+
+    // @TODO: ini kedepannya pakai SQS
+    const payload: any = [
+      {
+        at_created: now,
+        ...((params.is_anonim) ? {} : {
+          user_id: auth.user_id,
+          username: user.username,
+          name_: user.name_,
+          ...userPhoto(user),
+        }),
+        total_comment: 0,
+        is_anonim: params.is_anonim,
+        text: params.text,
+      }
+    ];
+    const iotClient = new IoTDataPlaneClient(config);
+    const iotCommand = new PublishCommand({
+      qos: 0,
+      topic: '/confides',
+      payload: fromUtf8(JSON.stringify(payload)),
+    });
+    await iotClient.send(iotCommand);
 
     return {
       status: true,

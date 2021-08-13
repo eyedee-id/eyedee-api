@@ -30,3 +30,8 @@ iamRoleStatements:
           - "/"
           - - { Fn::GetAtt: [ S3Bucket, Arn ] }
             - "*"
+  - Effect: Allow
+    Action:
+      - iot:Publish
+    Resource:
+      - '*'

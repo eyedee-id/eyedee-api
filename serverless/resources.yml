@@ -3,8 +3,9 @@ resources:
     CognitoUserPool: ${file(./serverless/resources/cognito.yml):CognitoUserPool}
     CognitoUserPoolClient: ${file(./serverless/resources/cognito.yml):CognitoUserPoolClient}
     CognitoIdentityPool: ${file(./serverless/resources/cognito.yml):CognitoIdentityPool}
-    CognitoIdentityPoolRoles: ${file(./serverless/resources/cognito.yml):CognitoIdentityPoolRoles}
+    CognitoUnauthRole: ${file(./serverless/resources/cognito.yml):CognitoUnauthRole}
     CognitoAuthRole: ${file(./serverless/resources/cognito.yml):CognitoAuthRole}
+    CognitoIdentityPoolRoles: ${file(./serverless/resources/cognito.yml):CognitoIdentityPoolRoles}
     S3Bucket: ${file(./serverless/resources/s3.yml):S3Bucket}
     TableUser: ${file(./serverless/resources/dynamodb.yml):TableUser}
     TableMain: ${file(./serverless/resources/dynamodb.yml):TableMain}
@@ -22,6 +23,11 @@ resources:
     IdentityPoolId:
       Value:
         Ref: CognitoIdentityPool
+    CognitoUnauthRole:
+      Value:
+        Ref: CognitoUnauthRole
+      Export:
+        Name: ${self:service}-${self:custom.stage}-CognitoUnauthRole
     CognitoAuthRole:
       Value:
         Ref: CognitoAuthRole
