@@ -20,6 +20,11 @@ export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent, 
     const now = +new Date();
 
     const userAttributes: any = {};
+
+    if (event.request.userAttributes.email) {
+      userAttributes.email = event.request.userAttributes.email;
+    }
+
     if (event.request.userAttributes.name) {
       userAttributes.name = event.request.userAttributes.name;
     }
@@ -31,7 +36,6 @@ export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent, 
     await userPut(event.request.userAttributes.sub, {
       user_id: event.request.userAttributes.sub,
       username: event.userName,
-      email: event.request.userAttributes.email,
       at_created: now,
       ...userAttributes,
     })
