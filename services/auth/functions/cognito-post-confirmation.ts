@@ -12,7 +12,6 @@ export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent, 
       || !event.request.userAttributes
       || !event.request.userAttributes.sub
       || !event.userName
-      || !event.request.userAttributes.email
     ) {
       throw Error('Error: Nothing was written to DDB')
     }
