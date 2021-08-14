@@ -21,11 +21,13 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
     if (params && params.at_created && params.confide_id) {
       if (userIsGetOwnData) {
         lastKey = dynamodbEncodeKeyUserPrivateConfide({
+          user_id: params.user_id,
           at_created: +params.at_created,
           confide_id: params.confide_id,
         });
       } else {
         lastKey = dynamodbEncodeKeyUserPublicConfide({
+          user_id: params.user_id,
           at_created: +params.at_created,
           confide_id: params.confide_id,
         });
