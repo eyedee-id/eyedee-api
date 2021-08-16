@@ -90,14 +90,13 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
 
     const auth = getAuth(event);
 
-    const now = +new Date();
     const confide = {
       user_id: auth.user_id,
       ...((params.public.is_anonim) ? {
         at_created: params.public.at_created,
         confide_id: params.public.confide_id,
       } : {
-        at_created: now,
+        at_created: +(new Date()),
         confide_id: nanoid(32),
       }),
     };
@@ -134,7 +133,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
         ...((params.public.is_anonim) ? {} : {
           user_id: auth.user_id,
         }),
-        at_created: now,
+        at_created: confide.at_created,
         total_comment: 0,
         is_anonim: params.public.is_anonim,
         text: params.public.text,
@@ -219,7 +218,7 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
     // @TODO: ini kedepannya pakai SQS
     const payload: any = [
       {
-        at_created: now,
+        at_created: confide.at_created,
         ...((params.public.is_anonim) ? {} : {
           user_id: auth.user_id,
           username: user.username,
