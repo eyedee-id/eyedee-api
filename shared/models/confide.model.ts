@@ -10,6 +10,8 @@ export interface ConfideModel {
   at_created?: number;
   at_updated?: number;
 
+  order_id?: number; // khusus private confides
+
   hashtag?: string;
   hashtags?: Array<string>;
 }
@@ -79,11 +81,8 @@ export function dynamodbDecodeKeyUserPublicConfide(params: { pk: string, sk: str
 export function dynamodbEncodeKeyUserPrivateConfide(params: ConfideModel): { pk: string, sk: string, } {
 
   const sortKeys: Array<string> = ['CONFIDE'];
-  if (params.at_created) {
-    sortKeys.push(params.at_created.toString());
-    if (params.confide_id) {
-      sortKeys.push(params.confide_id);
-    }
+  if (params.order_id) {
+    sortKeys.push(params.order_id.toString());
   }
 
   return {
@@ -99,13 +98,11 @@ export function dynamodbDecodeKeyUserPrivateConfide(params: { pk: string, sk: st
     const userId = partitionKey[1];
 
     const sortKey = params.sk.split('#');
-    const atCreated = +sortKey[1];
-    const confideId = sortKey[2];
+    const orderId = +sortKey[1];
 
     return {
       user_id: userId,
-      confide_id: confideId,
-      at_created: atCreated,
+      order_id: orderId,
     };
   } catch (e) {
     throw Error(`Failed to decode key ${params.pk} ${params.sk}`);

@@ -1,30 +1,31 @@
 import {APIGatewayProxyEventV2} from 'aws-lambda';
 import {ApiModel} from '../../../shared/models/api.model';
 import {
-  ConfideModel,
-  dynamodbDecodeKeyUserPublicConfide,
-  dynamodbEncodeKeyUserPublicConfide,
+  ConfideModel, dynamodbDecodeKeyUserPrivateConfide,
+  dynamodbEncodeKeyUserPrivateConfide,
 } from '../../../shared/models/confide.model';
 import {dynamodbQuery, dynamodbQueryLimit} from '../../../shared/libs/dynamodb';
 import {unmarshall} from '@aws-sdk/util-dynamodb';
+import {getAuth} from "../../../shared/libs/auth";
 
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<Array<ConfideModel>>> {
   try {
+    const auth = getAuth(event);
+
     let lastKey = undefined;
     const params = event.queryStringParameters;
 
-    if (params && params.at_created && params.confide_id) {
-      lastKey = dynamodbEncodeKeyUserPublicConfide({
-        user_id: params.user_id,
-        at_created: +params.at_created,
-        confide_id: params.confide_id,
+    if (params && params.order_id) {
+      lastKey = dynamodbEncodeKeyUserPrivateConfide({
+        user_id: auth.user_id,
+        order_id: +params.order_id,
       });
     }
 
     let key = {pk: '', sk: ''};
-    key = dynamodbEncodeKeyUserPublicConfide({
-      user_id: params.user_id,
+    key = dynamodbEncodeKeyUserPrivateConfide({
+      user_id: auth.user_id,
     });
 
     const dynamodbResult = await dynamodbQuery({
@@ -39,16 +40,11 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
     const confides = dynamodbResult.Items
       .map(i => {
         const unmarshalled = unmarshall(i);
-        let decodedKey: ConfideModel = {};
 
-        decodedKey = dynamodbDecodeKeyUserPublicConfide({
+        const decodedKey = dynamodbDecodeKeyUserPrivateConfide({
           pk: unmarshalled.pk,
           sk: unmarshalled.sk,
         })
-
-        if (unmarshalled.is_anonim) {
-          delete unmarshalled.user_id;
-        }
 
         return {
           ...unmarshalled,

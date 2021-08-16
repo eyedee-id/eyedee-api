@@ -4,8 +4,8 @@ import {
   ConfideModel,
   dynamodbDecodeKeyConfideDetail,
   dynamodbEncodeKeyConfideDetail,
-  dynamodbEncodeKeyExploreConfide, dynamodbEncodeKeyHashtagConfide,
-  dynamodbEncodeKeyUserPrivateConfide,
+  dynamodbEncodeKeyExploreConfide,
+  dynamodbEncodeKeyHashtagConfide,
   dynamodbEncodeKeyUserPublicConfide,
 } from '../../../shared/models/confide.model';
 import {
@@ -177,17 +177,6 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<C
       await dynamodbUpdate(
         confideUserPublicKey.pk,
         confideUserPublicKey.sk,
-        'SET total_comment = if_not_exists(total_comment, :total_comment_default) + :increment',
-        {
-          ':increment': 1,
-          ':total_comment_default': 0,
-        }
-      )
-
-      const confideUserPrivateKey = dynamodbEncodeKeyUserPrivateConfide(confide);
-      await dynamodbUpdate(
-        confideUserPrivateKey.pk,
-        confideUserPrivateKey.sk,
         'SET total_comment = if_not_exists(total_comment, :total_comment_default) + :increment',
         {
           ':increment': 1,

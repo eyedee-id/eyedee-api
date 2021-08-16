@@ -39,6 +39,14 @@ functions:
           method: GET
           path: /v1/confide/user
           authorizer: authorizerCognito
+  ConfideApiUserPrivateV1:
+    handler: ./services/confide/functions/confide-user-private.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-user-private-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/confide/user/private
+          authorizer: authorizerCognito
   ConfideApiCommentListV1:
     handler: ./services/confide/functions/confide-comment-list.handler
     name: ${self:service}-${self:custom.stage}-confide-api-comment-list-v1

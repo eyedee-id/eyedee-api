@@ -5,8 +5,6 @@ import {userPut} from "../../../shared/functions/user";
 export async function handler(event: PostConfirmationConfirmSignUpTriggerEvent, context, callback): Promise<void> {
   try {
 
-    console.log(event);
-
     if (
       !event.request
       || !event.request.userAttributes

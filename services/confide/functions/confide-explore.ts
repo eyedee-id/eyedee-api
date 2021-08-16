@@ -63,11 +63,13 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<ApiModel<A
 
           if (!i.is_anonim) {
             const user = usersObj[i.user_id];
-            return {
-              ...i,
-              username: user.username,
-              name_: user.name_,
-              ...userPhoto(user),
+            if (user) {
+              return {
+                ...i,
+                username: user.username,
+                name_: user.name_,
+                ...userPhoto(user),
+              }
             }
           }
 
