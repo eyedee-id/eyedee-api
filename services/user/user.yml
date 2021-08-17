@@ -1,4 +1,11 @@
 functions:
+  AuthApiUserDetailAnonimV1:
+    handler: ./services/user/functions/user-detail-anonim.handler
+    name: ${self:service}-${self:custom.stage}-user-api-detail-anonim-v1
+    events:
+      - httpApi:
+          method: GET
+          path: /v1/anonim/user/{username}
   AuthApiUserDetailV1:
     handler: ./services/user/functions/user-detail.handler
     name: ${self:service}-${self:custom.stage}-user-api-detail-v1

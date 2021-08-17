@@ -7,6 +7,13 @@ functions:
           method: PUT
           path: /v1/confide
           authorizer: authorizerCognito
+  ConfideApiNewAnonimV1:
+    handler: ./services/confide/functions/confide-new-anonim.handler
+    name: ${self:service}-${self:custom.stage}-confide-api-new-anonim-v1
+    events:
+      - httpApi:
+          method: PUT
+          path: /v1/anonim/confide
   ConfideApiDetailV1:
     handler: ./services/confide/functions/confide-detail.handler
     name: ${self:service}-${self:custom.stage}-confide-api-detail-v1
