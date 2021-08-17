@@ -23,3 +23,11 @@ functions:
           method: GET
           path: /v1/auth/me
           authorizer: authorizerCognito
+  AuthApiIoTPolicyAttachConnectV1:
+    handler: ./services/auth/functions/iot-policy-attach-connect.handler
+    name: ${self:service}-${self:custom.stage}-auth-api-iot-policy-attach-connect-v1
+    events:
+      - httpApi:
+          method: POST
+          path: /v1/auth/iot/policy/attach-connect
+          authorizer: authorizerCognito
