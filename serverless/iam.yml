@@ -33,6 +33,7 @@ iamRoleStatements:
   - Effect: Allow
     Action:
       - iot:Publish
+      - iot:AttachPolicy
       - iot:AttachPrincipalPolicy
       - iot:DetachPrincipalPolicy
       - iot:CreatePolicy
